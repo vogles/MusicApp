@@ -5,7 +5,6 @@
              xmlns:models="clr-namespace:MusicApp.Models"
              x:DataType="viewmodel:MyLibraryViewModel"
              x:Class="MusicApp.MyLibraryPage">
-		
 	<Grid RowDefinitions="100, Auto, *"
 	      ColumnDefinitions=".75*, .25*"
 	      Padding="10">
@@ -30,9 +29,8 @@
 								CommandParameter="{Binding .}"/>
 						</Grid.GestureRecognizers>
 						
-							
 						<Image Grid.RowSpan="2"
-						       Source="{Binding ArtistImageUrl}"/>
+						       Source="{Binding CoverArtImagePath}"/>
 						<Label Grid.Column="1"
 						       Grid.RowSpan="2"
 						       Text="{Binding Name}" FontSize="24"/>

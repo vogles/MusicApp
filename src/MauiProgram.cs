@@ -1,4 +1,5 @@
-﻿using MusicApp.Pages;
+﻿using CommunityToolkit.Maui;
+using MusicApp.Pages;
 using MusicApp.Services;
 using MusicApp.ViewModels;
 
@@ -11,6 +12,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

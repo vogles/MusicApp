@@ -1,4 +1,4 @@
-using MusicApp.Models.SubsonicResponses;
+using MusicApp.Models;
 
 namespace MusicApp.Services;
 
@@ -10,5 +10,7 @@ public interface IMusicService
     
     Task<bool> Authenticate(string username, string password);
 
-    Task<List<ArtistIndexModel>> GetAllArtists();
+    Task<List<ArtistModel>> GetAllArtists();
+
+    Task<Stream> GetCoverArtStream(string coverArtId, int? size);
 }

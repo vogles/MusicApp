@@ -13,6 +13,8 @@ public class ArtistModel
     [JsonProperty("coverArt")]
     public string CoverArt { get; set; }
 
+    public string CoverArtImagePath { get; set; }
+
     [JsonProperty("albumCount")]
     public int AlbumCount { get; set; }
 
@@ -20,7 +22,7 @@ public class ArtistModel
     public string ArtistImageUrl { get; set; }
 
     [JsonProperty("musicBrainzId")]
-    public string MusicBranizId { get; set; }
+    public string MusicBrainzId { get; set; }
 
     [JsonProperty("sortName")]
     public string SortName { get; set; }

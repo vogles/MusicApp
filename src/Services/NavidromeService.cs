@@ -92,7 +92,7 @@ public class NavidromeService : IMusicService
         return loginSuccessful;
     }
 
-    public async Task<List<ArtistIndexModel>> GetAllArtists()
+    public async Task<List<ArtistModel>> GetAllArtists()
     {
         // string content = String.Empty;
         //
@@ -114,7 +114,7 @@ public class NavidromeService : IMusicService
         var uriBuilder = new StringBuilder();
         uriBuilder.Append("rest/getArtists");
         uriBuilder.Append("?v=").Append(Uri.EscapeDataString("1.16.1"));
-        uriBuilder.Append("&c=").Append(Uri.EscapeDataString("com.vogles.musicapp"));
+        uriBuilder.Append("&c=").Append(Uri.EscapeDataString("com.rojolabs.musicapp"));
         uriBuilder.Append("&u=").Append(Uri.EscapeDataString(_user.Username));
         uriBuilder.Append("&s=").Append(Uri.EscapeDataString(_user.SubsonicSalt));
         uriBuilder.Append("&t=").Append(Uri.EscapeDataString(_user.SubsonicToken));
@@ -124,6 +124,56 @@ public class NavidromeService : IMusicService
         
         var content = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<Dictionary<string, GetArtistsResponseModel>>(content);
-        return result["subsonic-response"].Artists.Index;
+
+        var artists = new List<ArtistModel>();
+        if (result.TryGetValue("subsonic-response", out var responseModel))
+        {
+            foreach (var index in responseModel.Artists.Index)
+            {
+                foreach (var artist in index.Artist)
+                {
+                    var coverArtStream = await GetCoverArtStream(artist.CoverArt);
+                    var coverArtCachePath = Path.Combine(Path.Combine(FileSystem.CacheDirectory, "artists"), "coverArt");
+                    var coverArtFilePath = Path.Combine(coverArtCachePath, artist.CoverArt);
+
+                    if (!Directory.Exists(coverArtCachePath))
+                        Directory.CreateDirectory(coverArtCachePath);
+
+                    using (var cachedFileStream = File.OpenWrite(coverArtFilePath))
+                    {
+                        await coverArtStream.CopyToAsync(cachedFileStream);
+                    }
+                    
+                    artist.CoverArtImagePath = coverArtFilePath;
+                    artists.Add(artist);
+                }
+            }
+        }
+        
+        return artists;
+    }
+    
+    public async Task<Stream> GetCoverArtStream(string coverArtId, int? size = null)
+    {
+        string content = String.Empty;
+        
+        var uriBuilder = new StringBuilder();
+        uriBuilder.Append("id=").Append(Uri.EscapeDataString(coverArtId));
+        uriBuilder.Append("&v=").Append(Uri.EscapeDataString("1.16.1"));
+        uriBuilder.Append("&c=").Append(Uri.EscapeDataString("com.rojolabs.musicapp"));
+        uriBuilder.Append("&u=").Append(Uri.EscapeDataString(_user.Username));
+        uriBuilder.Append("&s=").Append(Uri.EscapeDataString(_user.SubsonicSalt));
+        uriBuilder.Append("&t=").Append(Uri.EscapeDataString(_user.SubsonicToken));
+        uriBuilder.Append("&f=").Append("json");
+        
+        using (var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"rest/getCoverArt?{uriBuilder.ToString()}"))
+        {
+            var responseMessage = await _client.SendAsync(requestMessage);
+        
+            if (!responseMessage.IsSuccessStatusCode)
+                return null;
+        
+            return await responseMessage.Content.ReadAsStreamAsync();
+        }
     }
 }

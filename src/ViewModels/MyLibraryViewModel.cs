@@ -27,21 +27,18 @@ public partial class MyLibraryViewModel : ObservableObject
 
     private async void FetchArtists()
     {
-        var artistIndex = await _musicService.GetAllArtists();
+        var artists = await _musicService.GetAllArtists();
 
-        foreach (var index in artistIndex)
-        {
-            foreach (var artist in index.Artist)
-            {
-                _artists.Add(artist);
-            }
-        }
-        
+        artists.ForEach(a => Artists.Add(a));
     }
 
     [RelayCommand]
     private async Task OnArtistSelected(ArtistModel artist)
     {
-        await Shell.Current.GoToAsync(nameof(ArtistDetailPage));
+        await Shell.Current.GoToAsync(nameof(ArtistDetailPage),
+            new Dictionary<string, object>()
+            {
+                {"model", artist}
+            });
     }
 }
