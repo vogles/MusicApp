@@ -2,8 +2,13 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MusicApp.Pages.ArtistDetailPage">
+             xmlns:viewmodel="clr-namespace:MusicApp.ViewModels"
+             x:Class="MusicApp.Pages.ArtistDetailPage"
+             x:DataType="viewmodel:ArtistDetailViewModel">
     <ContentPage.Content>
-        <Label Text="Artist"></Label>
+        <StackLayout>
+            <Label Text="{Binding Path=Artist.Name}"></Label>
+            <Button Command="{Binding Path=GoBackCommand}"></Button>
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>
